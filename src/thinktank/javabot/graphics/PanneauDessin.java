@@ -421,6 +421,9 @@ public class PanneauDessin extends JPanel implements MouseListener {
 					GraphicInterface.setSelectedTank(t);
 					if (t != null && (MainWindow.getInterface().stoped==1 || MainWindow.getInterface().stoped==2)) {
 				          menu.show(e.getComponent(), e.getX(), e.getY());
+				          GraphicInterface.textAreaCode.setText(t.getIntel().getScript()
+									.getInstructions());
+				          
 
 						}
 
@@ -428,7 +431,7 @@ public class PanneauDessin extends JPanel implements MouseListener {
 				}
 
 			}
-	        }
+       }
 	}
 
 	public Physique getPhysique() {
