@@ -1,8 +1,7 @@
 package thinktank.javabot.physics;
 
+import java.awt.Color;
 import java.util.Random;
-
-import com.ziclix.python.sql.handler.UpdateCountDataHandler;
 
 import thinktank.javabot.graphics.GraphicInterface;
 import thinktank.javabot.intelligences.Action;
@@ -15,12 +14,21 @@ public class Tank extends Mobile {
 	private Arme arme;
 	private int pointsDeVie = 100;
 	// private int i=0;//pour les testes sans l'ia
-	private Intelligence ia;
+	public Intelligence ia;
 	private static Intelligences intels = new Intelligences();
 	private Sensors sensor;
 	public String tc;
 	public String filep;
+	public Color color = Color.BLUE;
 
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+	
 	public Sensors getSensor() {
 		return sensor;
 	}
@@ -107,21 +115,21 @@ public class Tank extends Mobile {
 
 	}
 
-	protected Tank(int x, int y, Terrain map, String filepath,
+	public Tank(int x, int y, Terrain map, String filepath,
 			Physique physique, String tc, String filepath2) {
 		setId(newId());
 		this.tc = tc;
 		setCoordX(x);
 		setCoordY(y);
-
 		arme = new Arme();
 		setArme(arme);
 		setMap(map);
 		setDirection(new Direction(0, 1));
 		this.filep = filepath2;
 		ia = intels.newIntelligence(filepath, this);
-		ia.start();
 		sensor = new DetectionLigneDroite(this, physique);
+		ia.start();
+		
 	}
 
 	protected void reduireTempsRestant() {
@@ -148,6 +156,9 @@ public class Tank extends Mobile {
 	 */
 	{
 		this.arme = arme;
+	}
+	public void setPointsDeVie(int pointsDeVie) {
+		this.pointsDeVie = pointsDeVie;
 	}
 
 	protected void tirer()
@@ -207,7 +218,7 @@ public class Tank extends Mobile {
 
 		if (GraphicInterface.getSelectedTank() == this)
 			GraphicInterface.setSelectedTank(null);
-		getMap().removeTank(this);
+		//getMap().removeTank(this);
 
 		if (GraphicInterface.getSelectedTank() == null) {
 			System.out.println("UPDATE");
@@ -216,7 +227,7 @@ public class Tank extends Mobile {
 		}
 	}
 
-	protected void action(Action act)
+	public void action(Action act)
 	/**
 	 * réalise l'action donnée par l'IA
 	 * 
@@ -301,5 +312,15 @@ public class Tank extends Mobile {
 		}
 		action(act);
 	}
+
+	public Intelligence getIa() {
+		return ia;
+	}
+
+	public void setIa(Intelligence ia) {
+		this.ia = ia;
+	}
+	
+	
 
 }

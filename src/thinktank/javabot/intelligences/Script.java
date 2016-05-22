@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import thinktank.javabot.graphics.GraphicInterface;
-import thinktank.javabot.graphics.MainWindow;
 import thinktank.javabot.physics.Tank;
 
 /**
@@ -47,7 +46,7 @@ public class Script {
 
 	}
 
-	public void setFileName(String filename)
+	public synchronized void setFileName(String filename)
 	/**
 	 * Attribue le chemin du fichier de script sélectionné
 	 * 
@@ -62,7 +61,7 @@ public class Script {
 		updateInstructions(instructions);
 	}
 
-	public String getInstructions()
+	public synchronized String getInstructions()
 	/**
 	 * Récupère les instructions du fichier de script
 	 * 
@@ -72,7 +71,7 @@ public class Script {
 		return instructions;
 	}
 
-	public void setCurrentLine(int line)
+	public synchronized void setCurrentLine(int line)
 	/**
 	 * Attribue la ligne en cours
 	 * 
@@ -82,7 +81,7 @@ public class Script {
 		currentLine = line;
 	}
 
-	public int getCurrentLine()
+	public synchronized int getCurrentLine()
 	/**
 	 * Retourne la ligne en cours
 	 * 
@@ -92,7 +91,7 @@ public class Script {
 		return currentLine;
 	}
 
-	public String getTmpFileName()
+	public synchronized String getTmpFileName()
 	/**
 	 * Retourne le nom du fichier temporaire du script
 	 * 
@@ -102,7 +101,7 @@ public class Script {
 		return tmpFileName;
 	}
 
-	public int startPositionLine(int line)
+	public synchronized int startPositionLine(int line)
 
 	/**
 	 * Retourne la position du premier caractère de la ligne à mettre en
@@ -125,7 +124,7 @@ public class Script {
 		return i;
 	}
 
-	public int endPositionLine(int line)
+	public synchronized int endPositionLine(int line)
 
 	/**
 	 * Retourne la position du dernier caractère de la ligne à mettre en
@@ -148,7 +147,7 @@ public class Script {
 		return i;
 	}
 
-	private void generateTmpFileName()
+	private synchronized void generateTmpFileName()
 	/**
 	 * Génére un nom aléatoire pour le fichier .py temporaire
 	 */
@@ -162,7 +161,7 @@ public class Script {
 	}
 
 	/* Ecrit dans le fichier temporaire */
-	private void writeTmpFile()
+	public synchronized void writeTmpFile()
 	/**
 	 * Ecrit dans le fichier temporaire
 	 */
@@ -170,7 +169,6 @@ public class Script {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
 					"src/ressources/" + tmpFileName)));
-
 			writer.write(tmpFileContent);
 			writer.close();
 		} catch (IOException e1) {
@@ -180,7 +178,7 @@ public class Script {
 
 	}
 
-	private String addLayer(String instr)
+	private synchronized String addLayer(String instr)
 	/**
 	 * Retourne la string contenant le script python avec la surcouche
 	 * 
@@ -190,30 +188,30 @@ public class Script {
 	{
 		String tmpFileContentLayer = instr;
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.doNothing\\(\\)", "tank.doNothing(lineno())");
+				"doNothing\\(\\)", "tank.doNothing(lineno())");
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.moveForward\\(\\)", "tank.moveForward(lineno())");
+				"moveForward\\(\\)", "tank.moveForward(lineno())");
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.moveBackward\\(\\)", "tank.moveBackward(lineno())");
+				"moveBackward\\(\\)", "tank.moveBackward(lineno())");
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.turnClockwise\\(\\)", "tank.turnClockwise(lineno())");
+				"turnClockwise\\(\\)", "tank.turnClockwise(lineno())");
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.turnCounterClockwise\\(\\)",
+				"turnCounterClockwise\\(\\)",
 				"tank.turnCounterClockwise(lineno())");
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.shoot\\(\\)", "tank.shoot(lineno())");
+				"shoot\\(\\)", "tank.shoot(lineno())");
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.radar\\(\\)", "tank.radar(lineno())");
+				"radar\\(\\)", "tank.radar(lineno())");
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.distanceOfForwardObstacle\\(\\)",
+				"distanceOfForwardObstacle\\(\\)",
 				"tank.distanceOfForwardObstacle(lineno())");
 		tmpFileContentLayer = tmpFileContentLayer.replaceAll(
-				"tank.typeOfForwardObstacle\\(\\)",
+				"typeOfForwardObstacle\\(\\)",
 				"tank.typeOfForwardObstacle(lineno())");
 		return tmpFileContentLayer;
 	}
 
-	public void updateInstructions(String newInstructions)
+	public synchronized void updateInstructions(String newInstructions)
 	/**
 	 * Applique la surcouche au script Python
 	 * 
@@ -231,7 +229,7 @@ public class Script {
 
 	}
 
-	private void importInstructionsFromFile(String path)
+	public synchronized void importInstructionsFromFile(String path)
 
 	/**
 	 * chemin du script pour l'import de l'instruction
@@ -262,6 +260,7 @@ public class Script {
 				tmpFileContent = addLayer(instructions);
 
 			}
+			System.out.println(tmpFileContent);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -274,5 +273,12 @@ public class Script {
 			}
 		}
 	}
+
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
+	
+	
+	
 
 }

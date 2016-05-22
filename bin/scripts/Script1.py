@@ -1,5 +1,5 @@
-print ("Lancement d'un tank");
-
-
+print "Test"
 while True:
-	tank.moveForward()
+	moveForward()
+	shoot()
+	moveBackward()

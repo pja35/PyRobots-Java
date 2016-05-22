@@ -1,5 +1,6 @@
 package thinktank.javabot.physics;
 
+import thinktank.javabot.graphics.MainWindow;
 import thinktank.javabot.intelligences.Action;
 
 public abstract class Mobile implements ObjetTT {
@@ -9,7 +10,7 @@ public abstract class Mobile implements ObjetTT {
 	private int coordX;
 	private int coordY;
 	private Terrain map;
-	private Direction direction;
+	private Direction direction=new Direction();
 	private int latence = 0;
 	private boolean mort = false;
 	private int avancement = 0;
@@ -104,7 +105,7 @@ public abstract class Mobile implements ObjetTT {
 		return val_ret;
 	}
 
-	protected int reculer()
+	public int reculer()
 	/**
 	 * permet le mouvement dans le sens contraire de la direction
 	 */
@@ -150,7 +151,7 @@ public abstract class Mobile implements ObjetTT {
 		return coordX;
 	}
 
-	protected void setCoordX(int coordX)
+	public void setCoordX(int coordX)
 	/**
 	 * met à jours la coordonnée en absyss
 	 * 
@@ -169,7 +170,7 @@ public abstract class Mobile implements ObjetTT {
 		return coordY;
 	}
 
-	protected void setCoordY(int coordy)
+	public void setCoordY(int coordy)
 	/**
 	 * met à jours la coordonnée en absyss
 	 * 
@@ -188,7 +189,7 @@ public abstract class Mobile implements ObjetTT {
 		return direction;
 	}
 
-	protected void setDirection(Direction direction)
+	public void setDirection(Direction direction)
 	/**
 	 * met à jours la Direction
 	 * 
@@ -222,5 +223,7 @@ public abstract class Mobile implements ObjetTT {
 	/**
 	 * permet de detruire l'objet
 	 */
+	
+	
 
 }

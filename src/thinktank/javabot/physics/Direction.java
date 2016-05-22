@@ -28,7 +28,7 @@ public class Direction {
 		return dy;
 	}
 
-	protected void tournerDroite() {
+	public void tournerDroite() {
 		/**
 		 * permet la rotation droite d'un mobile
 		 */
@@ -39,7 +39,7 @@ public class Direction {
 
 	}
 
-	protected void tournerGauche() {
+	public void tournerGauche() {
 		/**
 		 * permet la rotation gauche d'un mobile
 		 */
@@ -48,6 +48,19 @@ public class Direction {
 		dx = dy; /* dx * 0 + dy * 1; */
 		dy = -tmp; /* tmp * -1 + dy * 0; */
 
+	}
+
+	public void setDx(int dx) {
+		this.dx = dx;
+	}
+
+	public void setDy(int dy) {
+		this.dy = dy;
+	}
+	
+	public Direction()
+	{
+		
 	}
 
 }

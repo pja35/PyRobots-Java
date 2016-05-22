@@ -1,0 +1,4 @@
+while True:
+	tank.moveForward(lineno())
+	tank.shoot(lineno())
+

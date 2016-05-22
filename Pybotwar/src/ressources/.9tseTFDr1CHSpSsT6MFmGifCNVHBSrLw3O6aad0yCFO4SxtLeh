@@ -1,3 +1,0 @@
-print "Hello World !"
-while True :
-	tank.shoot(lineno());

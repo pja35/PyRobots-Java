@@ -1,0 +1,8 @@
+print "Lancement d'un tank"
+
+while True:
+	tank.turnClockwise(lineno())
+	tank.shoot(lineno())
+	tank.moveForward(lineno())
+	tank.moveForward(lineno())
+	tank.moveForward(lineno())

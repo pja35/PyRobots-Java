@@ -1,0 +1,3 @@
+while True:
+	turnClockwiseu()
+	tank.moveForward(lineno())

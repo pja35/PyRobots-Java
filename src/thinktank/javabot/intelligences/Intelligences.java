@@ -19,14 +19,14 @@ public class Intelligences {
 	private ArrayList<Intelligence> intelligences = new ArrayList<Intelligence>();
 
 	/**
-	 * IncrÃ©mente le compteur (sÃ©maphore) d'intelligences s'exÃ©cutants.
+	 * Incrémente le compteur (sémaphore) d'intelligences s'exécutants.
 	 */
 	synchronized void addRunningIntelligence() {
 		this.runningIntelligences++;
 	}
 
 	/**
-	 * DÃ©crÃ©mente le compteur (sÃ©maphore) d'intelligences s'exÃ©cutants.
+	 * Décrémente le compteur (sémaphore) d'intelligences s'exécutants.
 	 */
 	synchronized void removeRunningIntelligence() {
 		this.runningIntelligences--;
@@ -38,14 +38,14 @@ public class Intelligences {
 	 * Renvoi le nombre d'ia qui sont toujours en train de calculer (non
 	 * endormies).
 	 * 
-	 * @return nombre d'intelligences s'exÃ©cutants.
+	 * @return nombre d'intelligences s'exécutants.
 	 */
-	public int runningIntelligences() {
+	public synchronized int runningIntelligences() {
 		return runningIntelligences;
 	}
 
 	/**
-	 * CrÃ©e une nouvelle intelligence et l'ajoute Ã  la liste.
+	 * Crée une nouvelle intelligence et l'ajoute Ã  la liste.
 	 * 
 	 * @param filepath
 	 *            Chemin de fichier vers le script (python) de l'IA utilisateur.
@@ -76,16 +76,16 @@ public class Intelligences {
 	}
 
 	/**
-	 * RÃ©veille toutes les IA pour calculer leurs prochaines actions. La
+	 * Réveille toutes les IA pour calculer leurs prochaines actions. La
 	 * fonction est non bloquante.
 	 */
-	public void computeAllActions() {
+	public synchronized void computeAllActions() {
 		for (Intelligence ia : intelligences)
 			ia.computeAction();
 	}
 
 	/**
-	 * Attend la fin du calcul de toutes les IA. Ã  exÃ©cuter APRES un
+	 * Attend la fin du calcul de toutes les IA. Ã  exécuter APRES un
 	 * computeAllActions().
 	 * 
 	 * @deprecated La fonction est BLOQUANTE. Ne l'utilisez QUE POUR DES TESTS.
@@ -103,14 +103,14 @@ public class Intelligences {
 	}
 
 	/**
-	 * Attend la fin du calcul de toutes les IA. Ã  exÃ©cuter APRES un
+	 * Attend la fin du calcul de toutes les IA. Ã  exécuter APRES un
 	 * computeAllActions(). La fonction est SEMI-BLOQUANTE (elle dispose d'un
 	 * timeout en millisecondes).
 	 * 
 	 * @param timeout
 	 *            Timeout en ms.
 	 * @deprecated Ne fonctionne pas correctement: l'intelligence peut ne pas se
-	 *             rÃ©veiller. NE PAS UTILISER! InsÃ©rer un sleep Ã  la place.
+	 *             réveiller. NE PAS UTILISER! Insérer un sleep Ã  la place.
 	 */
 	@Deprecated
 	public synchronized void waitForAllActions(long timeout) {

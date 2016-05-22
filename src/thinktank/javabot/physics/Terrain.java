@@ -1,5 +1,6 @@
 package thinktank.javabot.physics;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import thinktank.javabot.graphics.GraphicInterface;
@@ -26,7 +27,7 @@ public class Terrain {
 		affichageOn = false;
 	}
 
-	protected Terrain(int x, int y) {
+	public Terrain(int x, int y) {
 		terrain = new ObjetTT[x][y];
 
 		for (int i = 0; i < x; i++) { // initialise la map avec des murs tout
@@ -121,11 +122,34 @@ public class Terrain {
 	 * @param x
 	 *            absyss
 	 * @param y
-	 *            ordonnÃ©e
+	 *            ordonnée
 	 */
 	{
+		
 		Tank t = new Tank(x, y, this, "src/scripts/" + filepath + ".py",
 				physique, GraphicInterface.TankChoice, filepath);
+		switch (GraphicInterface.TankChoice)
+		{
+
+		  case "Vert":
+		    t.setColor(Color.green);
+		    break;  
+		  case "Jaune":
+			    t.setColor(Color.YELLOW);
+			    break;  
+		  case "Cyan":
+			    t.setColor(Color.CYAN);
+			    break;  
+		  case "Red":
+			    t.setColor(Color.RED);
+			    break;  
+		  case "Violet":
+			    t.setColor(new Color(255, 0, 255));
+			    break;  
+		  case "Rose":
+			    t.setColor(Color.PINK);
+			    break;  
+		}
 		tanks.add(t);
 		addObjetTT(t.getCoordX(), t.getCoordY(), t);
 		return t;
@@ -310,7 +334,7 @@ public class Terrain {
 		return -2;
 	}
 
-	protected void erase(int x, int y)
+	public void erase(int x, int y)
 	/**
 	 * enleve du Terrain l'objet en (x,y)
 	 * 
@@ -323,7 +347,7 @@ public class Terrain {
 		terrain[x][y] = Vide.getVide();
 	}
 
-	protected void addObjetTT(int x, int y, ObjetTT obj)
+	public void addObjetTT(int x, int y, ObjetTT obj)
 	/**
 	 * ajoute obj sur le Terrain
 	 * 

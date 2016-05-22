@@ -1,12 +1,19 @@
+
 package thinktank.javabot.graphics;
 
+import java.awt.Dimension;
 import java.awt.Point;
+import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import helper.GhostGlassPane;
+import thinktank.javabot.intelligences.Intelligence;
+import thinktank.javabot.intelligences.Intelligences;
 import thinktank.javabot.physics.Physique;
+import thinktank.javabot.physics.Terrain;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -21,12 +28,12 @@ public class MainWindow extends JFrame {
 	// private static int setX;
 	// private static int setY;
 
-	public static JPanel container;/* = new JPanel(); */
+	public static GhostGlassPane container;/* = new JPanel(); */
 	// private JPanel c2 = new JPanel();
 
 	public static Physique phy;
 
-	public static JPanel getContainer() {
+	public static GhostGlassPane getContainer() {
 		return container;
 	}
 
@@ -52,7 +59,7 @@ public class MainWindow extends JFrame {
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
-		container = new JPanel();
+		container = new GhostGlassPane();
 
 		container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
 
@@ -61,7 +68,7 @@ public class MainWindow extends JFrame {
 		this.setContentPane(container);
 		this.setResizable(true);
 		this.setVisible(false);
-		game.repaint();
+		//game.repaint();
 
 		try {
 			Thread.sleep(50);
@@ -77,13 +84,15 @@ public class MainWindow extends JFrame {
 		// NewGame.setResizable(false);
 
 		// NewGame.jPanel5.add(c2);
-		NewGame.jaune.add(container);
+		GraphicInterface.jaune.add(container);
 
-		NewGame.setSize(1250, 661);
+		NewGame.setSize(1368, 676);
+
 
 		NewGame.setResizable(true);
 		NewGame.setVisible(true);
 		Point p = NewGame.getLocationOnScreen();
+		NewGame.persistance();
 		System.out.println(p.getX());
 		System.out.println(p.getY());
 		this.setVisible(false);
@@ -94,27 +103,76 @@ public class MainWindow extends JFrame {
 	 * Graphics Fonction main principale
 	 **/
 	public static void main(String args[]) {
+		Random alea = new Random();
+		switch (alea.nextInt(4)) {
+		case 0 :
+			for (int i = 5; i < 10; i++) {
+				MainWindow.phy.newMur(i, 5);
 
-		for (int i = 5; i < 10; i++) {
-			MainWindow.phy.newMur(i, 5);
+			}
 
+			for (int i = 18; i < 25; i++) {
+				MainWindow.phy.newMur(i, 15);
+
+			}
+
+			for (int i = 10; i < 15; i++) {
+				MainWindow.phy.newMur(8, i);
+
+			}
+			break;
+		case 1 :
+			for (int i = 5; i < 15; i++) {
+				MainWindow.phy.newMur(i, 5);
+
+			}
+
+			for (int i = 14; i < 25; i++) {
+				MainWindow.phy.newMur(i, 15);
+
+			}
+
+			for (int i = 10; i < 15; i++) {
+				MainWindow.phy.newMur(4, i);
+
+			}
+			break;
+		case 2 :
+			for (int i = 20; i < 25; i++) {
+				MainWindow.phy.newMur(i, 5);
+
+			}
+
+			for (int i = 5; i < 12; i++) {
+				MainWindow.phy.newMur(i, 15);
+
+			}
+
+			for (int i = 10; i < 15; i++) {
+				MainWindow.phy.newMur(23, i);
+
+			}
+			break;
+		case 3 :
+			for (int i = 5; i < 10; i++) {
+				MainWindow.phy.newMur(i, 12);
+
+			}
+
+			for (int i = 18; i < 25; i++) {
+				MainWindow.phy.newMur(i, 5);
+
+			}
+
+			for (int i = 10; i < 18; i++) {
+				MainWindow.phy.newMur(18, i);
+
+			}
+			break;
+		case 4 :
+			break;
 		}
-		for (int i = 18; i < 25; i++) {
-			MainWindow.phy.newMur(i, 15);
 
-		}
-		for (int i = 5; i < 10; i++) {
-			MainWindow.phy.newMur(30, i);
-
-		}
-		for (int i = 28; i < 33; i++) {
-			// MainWindow.phy.newMur(i,20);
-
-		}
-		for (int i = 10; i < 15; i++) {
-			MainWindow.phy.newMur(8, i);
-
-		}
 
 		while (true) {
 
@@ -144,4 +202,97 @@ public class MainWindow extends JFrame {
 		return NewGame;
 	}
 
+	private static void eraseAll()
+	{
+		for(int i=0;i<30;i++)
+		{
+			for(int j=0;j<22;j++)
+			{
+				phy.getMap().erase(i, j);
+			}
+		}
+	}
+	
+	/*
+	 * La fonction permet de générer une nouvelle carte du jeu si il n'y a aucun tanks sur le terrain
+	 * La fonction pourrait être modifier pour finalement changer de carte de jeu même quand les tanks existent
+	 * en prenant en considération leurs positions
+	 */
+	public static void generateNewMap()
+	{
+		if(phy.getTanks().isEmpty())
+		{
+			phy.setMap(new Terrain(30, 22));
+			Random alea = new Random();
+			switch (alea.nextInt(4)) {
+			case 0 :
+				for (int i = 5; i < 10; i++) {
+					MainWindow.phy.newMur(i, 5);
+
+				}
+
+				for (int i = 18; i < 25; i++) {
+					MainWindow.phy.newMur(i, 15);
+
+				}
+
+				for (int i = 10; i < 15; i++) {
+					MainWindow.phy.newMur(8, i);
+
+				}
+				break;
+			case 1 :
+				for (int i = 5; i < 15; i++) {
+					MainWindow.phy.newMur(i, 5);
+
+				}
+
+				for (int i = 14; i < 25; i++) {
+					MainWindow.phy.newMur(i, 15);
+
+				}
+
+				for (int i = 10; i < 15; i++) {
+					MainWindow.phy.newMur(4, i);
+
+				}
+				break;
+			case 2 :
+				for (int i = 20; i < 25; i++) {
+					MainWindow.phy.newMur(i, 5);
+
+				}
+
+				for (int i = 5; i < 12; i++) {
+					MainWindow.phy.newMur(i, 15);
+
+				}
+
+				for (int i = 10; i < 15; i++) {
+					MainWindow.phy.newMur(23, i);
+
+				}
+				break;
+			case 3 :
+				for (int i = 5; i < 10; i++) {
+					MainWindow.phy.newMur(i, 12);
+
+				}
+
+				for (int i = 18; i < 25; i++) {
+					MainWindow.phy.newMur(i, 5);
+
+				}
+
+				for (int i = 10; i < 18; i++) {
+					MainWindow.phy.newMur(18, i);
+
+				}
+				break;
+			case 4 :
+				break;
+			}
+			MainWindow.game.repaint();
+		}
+	}
 }

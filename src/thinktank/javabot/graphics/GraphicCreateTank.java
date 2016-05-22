@@ -6,10 +6,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,6 +51,8 @@ public class GraphicCreateTank extends JFrame {
 	public GraphicInterface window;
 	private JLabel b;
 
+
+//	
 	public GraphicCreateTank(GraphicInterface graphicInterface) {
 		super("Nouveau Tank");
 		this.window = graphicInterface;
@@ -113,24 +119,44 @@ public class GraphicCreateTank extends JFrame {
 
 				window.addTank(a, scriptNom);
 
+				/*
+				 * à chaque ajout d'un tank, on écrit dans le fichier persistance le nom du script et le numéro de la couleur
+				 * du tank
+				 */
 				File varTmpDir = new File("src/scripts/" + scriptNom.getText()
 						+ ".py");
+				File persistance=new File("src/scripts/persistance.txt");
+				System.out.println("existance:"+persistance.exists());
 				boolean exists = varTmpDir.exists();
 				if (!exists) {
 
 					try {
 						BufferedWriter writer = new BufferedWriter(
 								new FileWriter(new File("src/scripts/"
-										+ scriptNom.getText() + ".py")));
+										+ scriptNom.getText() + ".py"),true));
 
 						writer.write("");
 
 						writer.close();
+							
 					} catch (IOException e2) {
 						e2.printStackTrace();
 					}
 				}
-
+				try {
+				if(!persistance.exists())
+				{
+					persistance.createNewFile();
+				}
+				FileWriter fw = new FileWriter(persistance.getAbsoluteFile(),true);
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write(scriptNom.getText()+"\n"+list.getSelectedIndex()+"\n");
+				bw.close();
+				}
+				catch (IOException e2) {
+					e2.printStackTrace();
+				}
+				fermer();
 			}
 		});
 
@@ -267,7 +293,7 @@ public class GraphicCreateTank extends JFrame {
 	}
 
 	public GraphicCreateTank(GraphicInterface interfaceModif,
-			final JLabel scriptnom, final int j) {
+			final JLabel scriptnom, final int j,final String toremove) {
 		// TODO Auto-generated constructor stub
 		super("Modifier votre Tank");
 		this.window = interfaceModif;
@@ -300,6 +326,48 @@ public class GraphicCreateTank extends JFrame {
 					scriptNom = new JLabel(textField.getText());
 				else
 					scriptNom = scriptnom;
+				/*
+				 * Suppression du tank qu'on a voulu modifier
+				 */
+				File inputFile = new File("src/scripts/persistance.txt");
+				File tempFile = new File("src/scripts/tmp.txt");
+					BufferedReader reader;
+					try {
+						reader = new BufferedReader(new FileReader(inputFile));
+						BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+						String lineToRemove = toremove;
+						System.out.println("to remove : "+lineToRemove+" to add : "+textField.getText());
+						String currentLine;
+						String currentLine2;
+						while((currentLine = reader.readLine()) != null && (currentLine2 = reader.readLine()) != null) {
+						    String trimmedLine = currentLine.trim();
+						    if(trimmedLine.equals(lineToRemove)) 
+						    	{
+						    	System.out.println("found");
+								File file1=new File("src/scripts/"+toremove+".py");
+								File file2=new File("src/scripts/"+textField.getText()+".py");
+								file1.renameTo(file2);
+						    	continue;
+						    	}
+						    writer.write(currentLine + System.getProperty("line.separator"));
+						    writer.write(currentLine2 + System.getProperty("line.separator"));
+						}
+//							writer.write(textField.getText() + System.getProperty("line.separator"));
+//							writer.write(list.getSelectedIndex() + System.getProperty("line.separator"));
+						writer.close(); 
+						reader.close(); 
+						forceRename(tempFile, inputFile);
+						//System.out.println("successful : "+successful);
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+				
+				//MainWindow.getInterface().modifierNomScript(scriptNom.getText(),toremove);
 
 				for (Object x : data.keySet()) {
 					if (list.getSelectedValue().equals(x)) {
@@ -338,7 +406,28 @@ public class GraphicCreateTank extends JFrame {
 				}
 
 				window.ModifTank(a, scriptNom, j);
-
+				/*
+				 * Ajout du nouveau nom du script et la nouvelle couleur dans le fichier persistance
+				 */
+				File varTmpDir = new File("src/scripts/" + scriptNom.getText()
+				+ ".py");
+				File persistance=new File("src/scripts/persistance.txt");
+				System.out.println("existance:"+persistance.exists());
+				boolean exists = varTmpDir.exists();
+				try {
+				if(!persistance.exists())
+				{
+					persistance.createNewFile();
+				}
+				FileWriter fw = new FileWriter(persistance.getAbsoluteFile(),true);
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write(scriptNom.getText()+"\n"+list.getSelectedIndex()+"\n");
+				bw.close();
+				}
+				catch (IOException e2) {
+					e2.printStackTrace();
+				}
+				fermer();
 			}
 		});
 
@@ -463,6 +552,18 @@ public class GraphicCreateTank extends JFrame {
 		this.setSize(254, 185);
 		this.setResizable(false);
 		this.setVisible(true);
+		
+	}
+	
+	public void fermer()
+	{
+		this.setVisible(false);
+	}
+	
+	public void forceRename(File source, File target) throws IOException
+	{
+	   if (target.exists()) target.delete();
+	   source.renameTo(target);
 	}
 
 }

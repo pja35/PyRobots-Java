@@ -1,0 +1,4 @@
+while True:
+	tank.moveBackward(lineno())
+	tank.turnClockwise(lineno())
+	ssdf

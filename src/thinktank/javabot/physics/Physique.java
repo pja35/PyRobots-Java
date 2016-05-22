@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import thinktank.javabot.graphics.GraphicInterface;
 import thinktank.javabot.intelligences.Action;
+import thinktank.javabot.intelligences.Intelligence;
 
 public class Physique {
 
@@ -172,7 +173,7 @@ public class Physique {
 		/**
 		 * lance la prochaine action de tout les éléments du Terrain
 		 */
-		GraphicInterface.updateOutputArea();
+		Intelligence.updateOutputArea();
 
 		Tank t;
 		int mobId;
@@ -263,5 +264,11 @@ public class Physique {
 		}
 
 	}
+
+	public void setMap(Terrain map) {
+		this.map = map;
+	}
+	
+	
 
 }

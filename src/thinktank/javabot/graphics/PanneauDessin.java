@@ -4,15 +4,24 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import thinktank.javabot.intelligences.Action;
+import thinktank.javabot.intelligences.Intelligence;
 import thinktank.javabot.physics.ObjetTT;
 import thinktank.javabot.physics.Physique;
 import thinktank.javabot.physics.Tank;
@@ -35,12 +44,66 @@ public class PanneauDessin extends JPanel implements MouseListener {
 	private int jaunex;
 	public static int lx = 30;
 	public static int ly = 22;
+	public static ArrayList<String> script = new ArrayList<>();
+	private static Image img = new ImageIcon("src/ressources/warning.png").getImage();
+	private JPopupMenu menu=new JPopupMenu("Menu");
 
 	public PanneauDessin(Physique physique) {
 		super();
 		this.physique = physique;
 		this.addMouseListener(this);
-
+		/*
+		 * Création des divers MenuItem et leurs action pour les ajouter au JPopupMenu
+		 */
+		 JMenuItem item = new JMenuItem("Supprimer le tank");
+		    item.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		        MainWindow.getPanneauDessin().getPhysique().destroyTank(MainWindow.getInterface().getSelectedTank());
+		        MainWindow.getInterface().setSelectedTank(null);
+		      }
+		    });
+		  menu.add(item);
+		  JMenuItem item1 = new JMenuItem("Orienter vers la gauche");
+		    item1.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		    	  if((MainWindow.getInterface().stoped==1 || MainWindow.getInterface().stoped==2)){
+		    		  System.out.println("Here");
+		  			GraphicInterface.getSelectedTank().getDirection().setDx(-1);
+		  			GraphicInterface.getSelectedTank().getDirection().setDy(0);
+		  	}
+		      }
+		    });
+		   menu.add(item1);
+		   JMenuItem item2 = new JMenuItem("Orienter vers la droite");
+		    item2.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		    	  if((GraphicInterface.stoped==1 || GraphicInterface.stoped==2)){
+		    		  GraphicInterface.getSelectedTank().getDirection().setDx(1);
+		          	  GraphicInterface.getSelectedTank().getDirection().setDy(0);
+		  	}
+		      }
+		    });
+		   menu.add(item2);
+		   JMenuItem item3 = new JMenuItem("Orienter vers le haut");
+		    item3.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		    	  if((GraphicInterface.stoped==1 || GraphicInterface.stoped==2)){
+		    		  GraphicInterface.getSelectedTank().getDirection().setDx(0);
+		          	  GraphicInterface.getSelectedTank().getDirection().setDy(-1);
+		  	}
+		      }
+		    });
+		   menu.add(item3);
+		   JMenuItem item4 = new JMenuItem("Orienter vers le bas");
+		    item4.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		    	  if((GraphicInterface.stoped==1 || GraphicInterface.stoped==2)){
+		    		  GraphicInterface.getSelectedTank().getDirection().setDx(0);
+		          	  GraphicInterface.getSelectedTank().getDirection().setDy(1);
+		  	}
+		      }
+		    });
+		   menu.add(item4);
 	}
 
 	public int getTailleCase() {
@@ -60,8 +123,12 @@ public class PanneauDessin extends JPanel implements MouseListener {
 		g.setColor(Color.WHITE);
 		g.drawRect(x, y - 10, 24, 5);
 	}
+	public static void paintTriangle(Graphics g, int x, int y) {
+		g.drawImage(img, x + 14 , y + 14, null);
 
-	private void paintSelectedArea(Graphics g, int x, int y) {
+	}
+
+	public static void paintSelectedArea(Graphics g, int x, int y) {
 		g.setColor(Color.blue);
 		g.drawRect(x - 15, y - 15, 50, 50);
 	}
@@ -155,38 +222,35 @@ public class PanneauDessin extends JPanel implements MouseListener {
 	 *            Outil de dessin permettant de dÃ©finir l'affichage Ã  l'Ã©cran
 	 **/
 	public void paintComponent(Graphics g) {
-
 		g.setColor(Color.black);
-		g.fillRect(0, 0, this.jaunex, this.jauney);
+		g.fillRect(0, 0, jaunex, jauney);
+		setBorders(g);
 
 		for (int i = 0; i < lx; i++) {
 			for (int j = 0; j < ly; j++) {
 
 				int x = i * tailleCase;
 				int y = j * tailleCase;
-				
-				
-				
-				
-				if(GraphicInterface.jaune.getWidth()>PanneauDessin.lx*PanneauDessin.tailleCase || GraphicInterface.jaune.getHeight()>PanneauDessin.ly*PanneauDessin.tailleCase){
+							
+				/*if(GraphicInterface.jaune.getWidth()>PanneauDessin.lx*PanneauDessin.tailleCase || GraphicInterface.jaune.getHeight()>PanneauDessin.ly*PanneauDessin.tailleCase){
 					pixelsavantx=(GraphicInterface.jaune.getWidth()-PanneauDessin.lx*PanneauDessin.tailleCase)/2;
 					pixelsavanty=(GraphicInterface.jaune.getHeight()-PanneauDessin.ly*PanneauDessin.tailleCase)/2;
 					y+=pixelsavanty;
 					x+=pixelsavantx;				
-				}
+				}*/
 
 				contenu = physique.detail(i, j);
 
 				if (contenu.getType() == Physique.type.vide) {
 					// g.drawImage(sol.getImg(),x,y,tailleCase,tailleCase,null);
+
 				} else if (contenu.getType() == Physique.type.mur) {
 					g.drawImage(mur.getImg(), x, y, tailleCase, tailleCase,
 							null);
 				} else if (contenu.getType() == Physique.type.tank) {
-
 					int dy = ((Tank) contenu).getDirection().getDy();
 					int dx = ((Tank) contenu).getDirection().getDx();
-					int ni = 0;
+					int ni = 0; 
 
 					if (dy > 0)
 						ni = 1;
@@ -218,14 +282,40 @@ public class PanneauDessin extends JPanel implements MouseListener {
 					}
 
 					paintLifeStick(g, posx, posy, vie);
+					ArrayList<Tank> Tanks = MainWindow.phy.getTanks();
+					for (Tank t : Tanks)
+					{
+						for (String fichier : script)
+						{
+							if(t.ia.getScript().getTmpFileName().equals(fichier))
+							{
+								int dyy = t.getDirection().getDy();
+								int dxx = t.getDirection().getDx();
+								int nii = 0;
+								if (dyy > 0)
+									nii = 1;
+								else if (dxx != 0)
+									nii = dxx < 0 ? 2 : 3;
+								int posXX = getPositionXFluide(t, t.getCoordX() * tailleCase, nii);
+								int posYY = getPositionYFluide(t, t.getCoordY() * tailleCase, nii);
+								System.out.println("TANK POSX: " + posXX + " POSY: " + posYY);
+								System.out.println("coord " + posXX + " " + posYY);
+								paintTriangle(g, posXX, posYY);
+							}
+						}
+					}
 
 					if (GraphicInterface.getSelectedTank() == (Tank) contenu) {
+						if(GraphicInterface.stoped==1||GraphicInterface.stoped==2){
+						GraphicInterface.slcTank=null;
 						paintSelectedArea(g, posx, posy);
+						GraphicInterface.SetBorder();}
 					}
 				} else if (contenu.getType() == Physique.type.projectile) {
 					g.drawImage(projectile.getImg(), x, y, tailleCase,
 							tailleCase, null);
 				}
+				
 			}
 			
 			if (GraphicInterface.TankChoice != "")
@@ -246,6 +336,10 @@ public class PanneauDessin extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+//		if(e.getClickCount()==2 && (MainWindow.getInterface().stoped==1 || MainWindow.getInterface().stoped==2)){
+//			MainWindow.getInterface().getSelectedTank().getDirection().tournerDroite();
+//			System.out.println(MainWindow.getInterface().getSelectedTank().getCoordX()*tailleCase+" "+MainWindow.getInterface().getSelectedTank().getCoordY()*tailleCase);
+//	}
 		if (e.getButton() == 1) {
 			System.out.println("x: " + e.getX() + "y: " + e.getY());
 			for (Tank t : physique.getTanks()) {
@@ -263,8 +357,14 @@ public class PanneauDessin extends JPanel implements MouseListener {
 						&& e.getX() <= posX + tailleCase
 						&& e.getY() <= posY + tailleCase
 						&& e.getY() >= posY - tailleCase) {
-
+					GraphicInterface.slcTank=null;
 					GraphicInterface.setSelectedTank(t);
+					if (t != null) {
+						GraphicInterface.textAreaCode.setText(t.getIntel().getScript()
+								.getInstructions());
+
+						}
+
 					return;
 				}
 
@@ -294,8 +394,41 @@ public class PanneauDessin extends JPanel implements MouseListener {
 	}
 
 	@Override
+	/*
+	 * Evenement click droit sur le panneau de dessin
+	 * l'evement permet d'afficher un menu contextuel si l'objet cliqué est un tank
+	 * le menu permet entre autre de supprimer le tank du panneau de jeu
+	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+	 */
 	public void mouseReleased(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			for (Tank t : physique.getTanks()) {
+				int dy = t.getDirection().getDy();
+				int dx = t.getDirection().getDx();
+				int ni = 0;
+				if (dy > 0)
+					ni = 1;
+				else if (dx != 0)
+					ni = dx < 0 ? 2 : 3;
+				int posX = getPositionXFluide(t, t.getCoordX() * tailleCase, ni);
+				int posY = getPositionYFluide(t, t.getCoordY() * tailleCase, ni);
+				System.out.println("TANK POSX: " + posX + " POSY: " + posY);
+				if (e.getX() >= posX - tailleCase
+						&& e.getX() <= posX + tailleCase
+						&& e.getY() <= posY + tailleCase
+						&& e.getY() >= posY - tailleCase) {
 
+					GraphicInterface.setSelectedTank(t);
+					if (t != null && (MainWindow.getInterface().stoped==1 || MainWindow.getInterface().stoped==2)) {
+				          menu.show(e.getComponent(), e.getX(), e.getY());
+
+						}
+
+					return;
+				}
+
+			}
+	        }
 	}
 
 	public Physique getPhysique() {
@@ -310,6 +443,27 @@ public class PanneauDessin extends JPanel implements MouseListener {
 	public void setTaillecase(int i) {
 		// TODO Auto-generated method stub
 
+	}
+	public static void tankBugge(String nomScript) {
+		// TODO Auto-generated method stub
+		script.add(nomScript);
+
+	}
+	
+	public void setBorders(Graphics g)
+	{
+		int x;
+		int y;
+		for (Tank tank : physique.getTanks()) {
+			if(GraphicInterface.slcTank!=null){
+			if(tank.filep.equals(GraphicInterface.slcTank.getText()))
+			{
+				x=tank.getCoordX()*tailleCase;
+				y=tank.getCoordY()*tailleCase;
+				paintSelectedArea(g, x, y);
+			}
+		}
+			}
 	}
 
 }

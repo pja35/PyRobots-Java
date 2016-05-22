@@ -1,10 +1,26 @@
 package thinktank.javabot.intelligences;
 
+import java.awt.Color;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.StringTokenizer;
 
+import javax.swing.JTextPane;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
+
+import org.python.antlr.PythonParser.break_stmt_return;
 import org.python.util.PythonInterpreter;
 
 import thinktank.javabot.graphics.GraphicInterface;
+import thinktank.javabot.graphics.PanneauDessin;
 import thinktank.javabot.physics.Tank;
 
 // TODO: Auto-generated Javadoc
@@ -32,9 +48,29 @@ public class Intelligence extends Thread {
 	/** The is initialized. */
 	private boolean isInitialized = false; // Verrou d'initialisation.
 
-	private Script script;
+	private Script scripts;
 
 	private PythonInterpreter interp;
+
+	private String nomFichier = null;
+
+	private String nomScript = null;
+
+	public static Color color = Color.BLACK; // couleur par defaut
+
+	public Document doc = GraphicInterface.textAreaOutput.getStyledDocument();	
+
+
+
+
+	public static Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
 
 	/**
 	 * Reprend le script python pour calculer une nouvelle action ÃƒÂ  effectuer.
@@ -90,7 +126,7 @@ public class Intelligence extends Thread {
 	}
 
 	public Script getScript() {
-		return script;
+		return scripts;
 	}
 
 	/**
@@ -139,7 +175,7 @@ public class Intelligence extends Thread {
 		this.tankR = new TankRemote(this, tankPhy);
 		this.setFilepath(filepath);
 		this.intelligences = intelligences;
-		script = new Script(filepath, this);
+		scripts = new Script(filepath, this);
 
 	}
 
@@ -148,7 +184,7 @@ public class Intelligence extends Thread {
 		this.tankR = new TankRemote(this, tankPhy);
 		this.setFilepath(filepath);
 		this.intelligences = intelligences;
-		this.script = script;
+		this.scripts = script;
 		System.out.println(script.getInstructions());
 	}
 
@@ -206,44 +242,110 @@ public class Intelligence extends Thread {
 
 	public void initInterpreter() {
 		interp = new PythonInterpreter();
-
 		interp.setOut(GraphicInterface.outPut);
-		// interp.setOut(System.out);
 		interp.exec("import sys");
 		interp.exec("import inspect");
 		interp.exec("def lineno():\n\treturn inspect.currentframe().f_back.f_lineno");
-		// interp.exec("print sys");
 		interp.set("tank", tankR);
 		tankR.bePrepared();
 	}
 
 	public void execInterpreter() {
-		interp.execfile("src/ressources/" + script.getTmpFileName());
+		System.out.println("path    :"+filepath.toString());
+		interp.execfile("src/ressources/" + scripts.getTmpFileName());
 		setAction(Action.scriptCompleted);
 	}
+	/**
+	 * update Output Area
+	 * cette fonction fait appel à la fonction 
+	 * updateOutputArea(Style style) de la classe GraphicInterface
+	 */
+	public static void updateOutputArea()
+	{
+		Style style = GraphicInterface.textAreaOutput.addStyle("Color1", null);
+		StyleConstants.setForeground(style, getColor());
+		GraphicInterface.updateOutputArea(style);
+	}
+
 
 	/**
 	 * Thread dÃ©diÃ©Â Ã  l'interprÃ©teur python pour l'IA utilisateur.
 	 */
-	public void run() {
+	public synchronized void  run() {
 		this.setRunning();
 		initInterpreter();
 		setInitialized();
-
+		// changer la couleur du Thread avec celle du Tank
+		this.setColor(this.tankR.tankPhy.color);
+		// Creation d'un nouveau style en lui attribuant la couleur du Tank
+		Style style = GraphicInterface.textAreaOutput.addStyle("Color", null);
+		StyleConstants.setForeground(style, this.getColor());
 		try {
 			execInterpreter();
 		} catch (Exception e) {
+			StringTokenizer decouper = new StringTokenizer(filepath);
+			while (decouper.hasMoreTokens()) {
+				nomFichier = decouper.nextToken("/");
+			}
+			StringTokenizer decoupermot = new StringTokenizer(nomFichier);
+			if (decoupermot.hasMoreTokens()) {
+				nomScript = decoupermot.nextToken(".");
+			}
 			try {
-				GraphicInterface.outPut.write("Erreur dans le script\n");
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+				doc.insertString(doc.getLength(),"Erreur dans le " + nomScript + " : \n", style);
+			} catch (BadLocationException e2) {
+				e2.printStackTrace();
+			}
+
+			String mot;
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			//Récuperer le message d'erreur dans un String
+			String exceptionAsString = sw.toString();
+			System.out.println(exceptionAsString);
+			//Découper le message d'erreur et le rendre le plus court possible
+			StringTokenizer decouperligne = new StringTokenizer(exceptionAsString);
+			boolean line = false;
+			while (decouperligne.hasMoreTokens()) {
+				mot = decouperligne.nextToken();
+				if(mot.equals("line") || line == true || mot.equals("SyntaxError:"))
+				{
+					line = true;
+					if(mot.equals("at"))
+						break;
+					else
+					{
+						try {
+							doc.insertString(doc.getLength(),mot + " ", style);
+						} catch (BadLocationException e1) {
+							e1.printStackTrace();
+						}
+
+					}
+				}
+			}		
+			try {
+				// Retour à la ligne à la fin de chaque message d'erreur
+				doc.insertString(doc.getLength(),"\n",style);
+			} catch (BadLocationException e1) {
 				e1.printStackTrace();
 			}
+			try {
+				Thread.sleep(25);
+			} catch (InterruptedException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			//Ajouter le script du tank dans la liste des scripts buggés
+			PanneauDessin.tankBugge(scripts.getTmpFileName());
 		}
+
 		this.noMoreRunning();
 
 		interp.close();
+
 	}
+
 
 	public String getFilepath() {
 		return filepath;
@@ -252,4 +354,20 @@ public class Intelligence extends Thread {
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
 	}
+	SimpleAttributeSet aset = new SimpleAttributeSet();
+
+
+	public PythonInterpreter getInterp() {
+		return interp;
+	}
+
+	public void setInterp(PythonInterpreter interp) {
+		this.interp = interp;
+	}
+
+	public void setScript(Script script) {
+		this.scripts = script;
+	}
+
+
 }
