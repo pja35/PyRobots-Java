@@ -14,8 +14,7 @@ dependencies {
     compile 'junit:junit:4.0+'
 }
 
-[compileJava, compileTestJava]*.options.collect {options -> options.encoding = 'ISO-8859-15'} 
-
+[compileJava, compileTestJava, javadoc]*.options.collect {options -> options.encoding = 'ISO-8859-15'} 
 
 sourceSets.main.resources.srcDirs = [ 'src/ressources' ]
 

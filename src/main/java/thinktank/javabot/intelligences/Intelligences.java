@@ -50,7 +50,7 @@ public class Intelligences {
 	 * @param filepath
 	 *            Chemin de fichier vers le script (python) de l'IA utilisateur.
 	 * @return intelligence
-	 * @deprecated Utilisez {@Link #newIntelligence(String, Tank)} Ã  la
+	 * @deprecated Utilisez {@link #newIntelligence(String, Tank)} Ã  la
 	 *             place.
 	 */
 	@Deprecated

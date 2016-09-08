@@ -200,7 +200,7 @@ WindowListener, KeyListener {
 	/**
 	 * met à jour le tank sélectionné
 	 * 
-	 * @param tank
+	 * @param t
 	 */
 	public static void setSelectedTank(Tank t) {
 		selectedTank = t;
