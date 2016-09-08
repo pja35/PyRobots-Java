@@ -1,0 +1,21 @@
+apply plugin: "java"
+apply plugin: "application"
+
+mainClassName = "thinktank.javabot.graphics.MainWindow"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.fifesoft:rsyntaxtextarea:2.5.8'
+    compile 'org.hamcrest:hamcrest-core:1.3'
+    compile 'org.python:jython-standalone:2.7.0'
+    compile 'junit:junit:4.0+'
+}
+
+[compileJava, compileTestJava]*.options.collect {options -> options.encoding = 'ISO-8859-15'} 
+
+
+sourceSets.main.resources.srcDirs = [ 'src/ressources' ]
+

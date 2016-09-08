@@ -1,4 +1,0 @@
-while True:
-	tank.moveForward(lineno())
-	tank.moveForward(lineno())
-	tank.moveForward(lineno())

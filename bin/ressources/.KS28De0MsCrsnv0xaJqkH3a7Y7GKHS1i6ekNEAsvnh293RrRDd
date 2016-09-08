@@ -1,4 +1,0 @@
-while True:
-	tank.turnClockwise(lineno())
-	tank.moveForward(lineno())
-dfsdkhfkjdlfjsdlslfl
